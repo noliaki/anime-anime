@@ -1,6 +1,7 @@
-const pkg = require('./package')
+import NuxtConfiguration from '@nuxt/config'
+import pkg from './package.json'
 
-module.exports = {
+const config: NuxtConfiguration = {
   mode: 'universal',
 
   /*
@@ -45,7 +46,7 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {
+    extend(config: any, ctx) {
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
@@ -58,3 +59,5 @@ module.exports = {
     }
   }
 }
+
+export default config
