@@ -70,6 +70,7 @@ typings/
 
 # Nuxt generate
 dist
+dist-server
 
 # vuepress build output
 .vuepress/dist
@@ -82,3 +83,6 @@ dist
 
 # Service worker
 sw.*
+tmp/*.jpg
+src/static/animation-img/*.gif
+twitter-credential.ts

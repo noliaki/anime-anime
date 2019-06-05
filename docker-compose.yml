@@ -4,9 +4,13 @@ services:
     build: .
     container_name: app-node
     ports:
-      - '3000:3000'
+      - 3000:3000
     volumes:
       - .:/app
+    tty: true
+    environment:
+      - DATABASE_HOST=app-mariadb
+    command: ash -c 'npm install && npm run dev'
 
   mariadb:
     image: mariadb:10.4.5
@@ -15,5 +19,6 @@ services:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=app
+      - MYSQL_DATABASE=media_app
     volumes:
       - ./mariadb-conf.d:/etc/mysql/conf.d

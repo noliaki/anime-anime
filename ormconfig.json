@@ -1,0 +1,11 @@
+{
+  "type": "mysql",
+  "host": "app-mariadb",
+  "port": 3306,
+  "username": "root",
+  "password": "app",
+  "database": "media_app",
+  "synchronize": true,
+  "logging": false,
+  "entities": ["src/entities/**/*.ts"]
+}

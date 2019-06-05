@@ -1,0 +1,121 @@
+title meida 3
+
+actor controller
+boundary /signage
+participant ws
+database DB
+
+
+group signage ready
+/signage->ws:connect
+note over ws: new Signage()
+ws->DB: save signage
+DB->ws: save OK
+note over ws: new Room()
+note over ws: room.status = SignageReady
+ws->DB: save room
+DB->ws: save OK
+ws->DB: save signage
+DB->ws: save OK
+note over ws: signage join room
+ws->/signage:connect OK
+note over /signage,ws: {\nroomName: 'ROOM_NAME'\n}
+note over /signage: create QR code
+end
+
+group controllerReady
+controller->/signage: read QR code
+controller->ws: connect
+note over ws: new Controller()
+ws->DB: save controller
+DB->ws: save OK
+ws->controller: connect OK
+controller->ws: join room
+note over controller,ws: {\nroomName: 'ROOM_NAME'\n}
+note over ws: controller join room
+ws->DB: controller save
+DB->ws: save OK
+
+note over ws: room.status = controllerReady
+ws->DB: room update
+DB->ws: update OK
+ws->controller: status change
+ws->/signage: status change
+note over controller: show Ready? button
+end
+
+group startStreaming
+controller->ws: start streaming
+ws->/signage: start streaming
+/signage->ws: streaming ok
+note over ws: room.status = streaming
+ws->DB: room save
+DB->ws: save OK
+ws->/signage: status change
+ws->controller: status change
+end
+
+group shot
+note over controller: show shoot button
+controller->ws: shot
+note over controller,ws: {\nroomName: 'ROOM_NAME'\n}
+ws->/signage:
+note over ws,/signage: { status: 'shot' }
+note over /signage: video pause
+/signage->ws: paused
+note over ws: room.status = shot
+ws->DB: room update
+DB->ws: update OK
+ws->/signage: status change
+ws->controller: status change
+note over ws,controller: {status: 'shot'}
+note over controller: show OK button
+
+group retake
+controller->ws: retake
+note over controller,ws: {\nroomName: 'ROOM_NAME'\n}
+ws->/signage: retake
+note over /signage: video play
+/signage->ws: video play
+note over ws: room.status = Streaming
+ws->DB: room update
+DB->ws: update OK
+ws->/signage: status change
+ws->controller: status change
+note over controller: hide OK button
+end
+end
+group generate image
+controller->ws: OK
+ws->/signage: OK
+note over /signage: start generate image
+/signage->ws: start generate
+note over ws: room.status = ImageGenerating
+ws->DB: room save
+DB->ws: save OK
+ws->controller: status change
+ws->/signage: status change
+note over controller: waiting image
+end
+
+group image generated
+/signage->ws: done generate image
+note over ws: room.status = ImageGenerated
+ws->DB: room save
+DB->ws: save OK
+ws->/signage: status change
+ws->controller: status change
+note over controller: show download button
+end
+
+group deliver image
+controller->ws: fetched image
+note over ws: room.status = Delivered
+ws->DB: room save
+DB->ws: save OK
+ws->controller: status change
+note over ws: disconnect controller
+ws->/signage: status change
+note over /signage: show thanks
+note over /signage: join room
+end

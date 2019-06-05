@@ -1,18 +1,28 @@
 import NuxtConfiguration from '@nuxt/config'
-import pkg from './package.json'
+import TerserPlugin from 'terser-webpack-plugin'
 
 const config: NuxtConfiguration = {
   mode: 'universal',
-
+  serverMiddleware: [
+    {
+      path: '/api',
+      handler: '~/serverMiddleware/api.ts'
+    }
+  ],
+  dev: process.env.NODE_ENV !== 'production',
+  server: {
+    host: '0.0.0.0',
+    port: 3000
+  },
   /*
    ** Headers of the page
    */
   head: {
-    title: pkg.name,
+    title: 'anime-anime',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      { hid: 'description', name: 'description', content: 'Media' }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
@@ -25,17 +35,22 @@ const config: NuxtConfiguration = {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['tailwindcss/dist/tailwind.min.css'],
 
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: [
+    {
+      src: '~/plugins/inject.ts'
+    }
+  ],
 
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/pwa'],
+  modules: [],
+  devModules: [],
 
   srcDir: 'src/',
 
@@ -55,6 +70,21 @@ const config: NuxtConfiguration = {
           loader: 'eslint-loader',
           exclude: /(node_modules)/
         })
+      }
+      if (ctx.isClient) {
+        if (!config.optimization.minimizer) {
+          config.optimization.minimizer = []
+        }
+
+        config.optimization.minimizer.push(
+          new TerserPlugin({
+            terserOptions: {
+              compress: {
+                drop_console: process.env.NODE_ENV === 'production'
+              }
+            }
+          })
+        )
       }
     }
   }

@@ -5,18 +5,23 @@
     "moduleResolution": "node",
     "lib": ["esnext", "esnext.asynciterable", "dom"],
     "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "strict": true,
     "noImplicitAny": false,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
+      "~/*": ["./src/*"],
+      "@/*": ["./src/*"],
+      "~~/*": ["./*"],
+      "@@/*": ["./*"]
     },
     "types": ["@types/node", "@nuxt/vue-app"],
+    "typeRoots": ["./@types"],
     "resolveJsonModule": true
   }
 }

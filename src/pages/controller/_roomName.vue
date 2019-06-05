@@ -5,29 +5,34 @@
     </transition>
   </div>
 </template>
+
 <script lang="ts">
 import Vue from 'vue'
-import TheQRcode from '~/components/Signage/TheQRcode.vue'
-import TheStream from '~/components/Signage/TheStream.vue'
 import TheWaiting from '~/components/TheWaiting.vue'
-import TheAnimationDisplay from '~/components/Signage/TheAnimationDisplay.vue'
-import TheGenerating from '~/components/Signage/TheGenerating.vue'
+import TheReady from '~/components/Controller/TheReady.vue'
+import TheConnectingSignage from '~/components/Controller/TheConnectingSignage.vue'
+import TheOperation from '~/components/Controller/TheOperation.vue'
+import TheAnimationDisplay from '~/components/Controller/TheAnimationDisplay.vue'
 
 export default Vue.extend({
   components: {
-    TheQRcode,
-    TheStream,
     TheWaiting,
-    TheAnimationDisplay,
-    TheGenerating
+    TheReady,
+    TheConnectingSignage,
+    TheOperation,
+    TheAnimationDisplay
   },
   computed: {
     scene(): string {
-      return this.$store.getters['signage/scene']
+      return this.$store.getters['controller/scene']
+    },
+    waitResponse(): boolean {
+      return this.$controller.waitResponse
     }
   },
   mounted(): void {
-    this.$store.dispatch('signage/initIo')
+    this.$store.commit('controller/setRoomName', this.$route.params.roomName)
+    this.$store.dispatch('controller/initIo')
   }
 })
 </script>

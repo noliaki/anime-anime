@@ -19,6 +19,7 @@ module.exports = {
   rules: {
     'nuxt/no-cjs-in-config': 'off',
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'error'
+    '@typescript-eslint/no-unused-vars': 'error',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   }
 }
