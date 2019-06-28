@@ -110,11 +110,11 @@ export default app.post(
     )
     fileNames.push(centerImageFileName)
 
-    const fileName: string = await createAnimation(fileNames)
+    const animationFileName: string = await createAnimation(fileNames)
 
     res.status(200)
     res.json({
-      fileName
+      animationFileName
     })
   }
 )

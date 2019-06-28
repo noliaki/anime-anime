@@ -39,6 +39,9 @@ export default Vue.extend({
       return this.showImg && !this.loadedImg
     }
   },
+  mounted(): void {
+    this.$store.dispatch('controller/disconnect')
+  },
   methods: {
     onClickDownload(): void {
       this.showImg = true

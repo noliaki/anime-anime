@@ -37,7 +37,11 @@ export const getters: GetterTree<State, null> = {
       case Status.Shot:
         return 'TheOperation'
 
-      case Status.imageGenerated:
+      case Status.StartGenerating:
+      case Status.ImageGenerating:
+        return 'TheGenerating'
+
+      case Status.FinishGenerating:
         return 'TheAnimationDisplay'
 
       default:
@@ -47,16 +51,14 @@ export const getters: GetterTree<State, null> = {
 }
 
 export const mutations: MutationTree<State> = {
-  identified(state: State, data: any): void {
-    state.socketId = data.socketId
-  },
   updatedStatus(state: State, data: any): void {
-    if (data.fileName) {
-      state.animationFileName = data.fileName
-    }
-
     if (data.roomName) {
       state.roomName = data.roomName
+    }
+
+    if (data.animationFileName) {
+      console.log(data.animationFileName)
+      state.animationFileName = data.animationFileName
     }
 
     state.status = data.status
@@ -76,41 +78,33 @@ export const mutations: MutationTree<State> = {
 export const actions: ActionTree<State, null> = {
   initIo({ commit }): void {
     controllerIo = io('/controller')
-    controllerIo
-      .on(
-        controllerEvent.identified,
-        (data: any): void => {
-          commit('identified', data)
-          commit('recieveRequest')
-        }
-      )
-      .on(
-        controllerEvent.updatedStatus,
-        (data: any): void => {
-          console.log(controllerEvent.updatedStatus)
-          console.log(data)
-          commit('updatedStatus', data)
-          commit('recieveRequest')
+    controllerIo.on(
+      'connect',
+      (): void => {
+        controllerIo
+          .on(
+            controllerEvent.updatedStatus,
+            (data: any): void => {
+              console.log(controllerEvent.updatedStatus)
+              console.log(data)
+              commit('updatedStatus', data)
+              commit('recieveRequest')
 
-          if (data.status === Status.imageGenerated) {
-            controllerIo.close()
-          }
-        }
-      )
-      .on(
-        controllerEvent.changeFrame,
-        (data: any): void => {
-          console.log(data)
-          commit('recieveRequest')
-        }
-      )
+              if (data.status === Status.FinishGenerating) {
+                controllerIo.close()
+              }
+            }
+          )
+          .on(
+            controllerEvent.changeFrame,
+            (data: any): void => {
+              console.log(data)
+              commit('recieveRequest')
+            }
+          )
+      }
+    )
   },
-  // join({ commit, state }): void {
-  //   commit('startRequest')
-  //   controllerIo.emit(controllerEvent.joinRoom, {
-  //     roomName: state.roomName
-  //   })
-  // },
   start({ commit, state }): void {
     if (state.waitResponse) return
 
@@ -154,5 +148,8 @@ export const actions: ActionTree<State, null> = {
       roomName: state.roomName,
       socketId: state.socketId
     })
+  },
+  disconnect(): void {
+    controllerIo.close()
   }
 }

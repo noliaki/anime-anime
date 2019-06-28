@@ -20,7 +20,6 @@ export default (socketIoServer: socketIo.Server): void => {
 async function onConnect(socket: socketIo.Socket): Promise<void> {
   const signage: Signage = new Signage()
   signage.socketId = socket.id
-  await signage.save()
 
   const room: Room = new Room()
   room.status = Status.SignageReady
@@ -34,7 +33,6 @@ async function onConnect(socket: socketIo.Socket): Promise<void> {
   socket
     .on(signageEvent.joinRoom, onJoinRoom(socket))
     .on(signageEvent.startedStreaming, onStartedStreaming(socket))
-    .on(signageEvent.pausedStreaming, onPausedStreaming(socket))
     .on(signageEvent.startGenerating, onStartGenerating(socket))
     .on(signageEvent.doneGenerated, onDoneGenerated(socket))
 
@@ -45,7 +43,7 @@ async function onConnect(socket: socketIo.Socket): Promise<void> {
     roomName: room.name
   }
 
-  socket.emit(signageEvent.identified, res)
+  socket.emit(signageEvent.updatedStatus, res)
 }
 
 function onJoinRoom(socket: socketIo.Socket): () => Promise<void> {
@@ -113,8 +111,10 @@ function onStartedStreaming(
       signage.room.status !== Status.ControllerReady &&
       signage.room.status !== Status.Shot
     ) {
-      socket.emit(signageEvent.roomStatus, {
-        status: signage.room.status
+      socket.emit(signageEvent.updatedStatus, {
+        status: signage.room.status,
+        roomName: signage.room.name,
+        animationFileName: signage.room.animationFileName
       })
 
       return
@@ -136,40 +136,40 @@ function onStartedStreaming(
   }
 }
 
-function onPausedStreaming(socket: socketIo.Socket): () => Promise<void> {
-  return async (): Promise<void> => {
-    const signage: Signage | undefined = await getRepository(Signage).findOne({
-      relations: ['room'],
-      where: {
-        socketId: socket.id
-      }
-    })
+// function onPausedStreaming(socket: socketIo.Socket): () => Promise<void> {
+//   return async (): Promise<void> => {
+//     const signage: Signage | undefined = await getRepository(Signage).findOne({
+//       relations: ['room'],
+//       where: {
+//         socketId: socket.id
+//       }
+//     })
 
-    if (!(signage && signage.room)) {
-      socket.emit(signageEvent.error, {
-        message: 'signage is not found'
-      })
+//     if (!(signage && signage.room)) {
+//       socket.emit(signageEvent.error, {
+//         message: 'signage is not found'
+//       })
 
-      return
-    }
+//       return
+//     }
 
-    signage.room.status = Status.Shot
-    await signage.room.save()
+//     signage.room.status = Status.Shot
+//     await signage.room.save()
 
-    const res: Responce = {
-      roomName: signage.room.name,
-      status: signage.room.status
-    }
+//     const res: Responce = {
+//       roomName: signage.room.name,
+//       status: signage.room.status
+//     }
 
-    io.of(signageNameSpace)
-      .in(signage.room.name)
-      .emit(signageEvent.updatedStatus, res)
+//     io.of(signageNameSpace)
+//       .in(signage.room.name)
+//       .emit(signageEvent.updatedStatus, res)
 
-    io.of(controllerNameSpace)
-      .in(signage.room.name)
-      .emit(controllerEvent.updatedStatus, res)
-  }
-}
+//     io.of(controllerNameSpace)
+//       .in(signage.room.name)
+//       .emit(controllerEvent.updatedStatus, res)
+//   }
+// }
 
 function onStartGenerating(socket: socketIo.Socket): () => Promise<void> {
   return async (): Promise<void> => {
@@ -225,13 +225,14 @@ function onDoneGenerated(
       return
     }
 
-    signage.room.status = Status.imageGenerated
+    signage.room.status = Status.FinishGenerating
+    signage.room.animationFileName = data.animationFileName
     await signage.room.save()
 
     const res: Responce = {
       roomName: signage.room.name,
       status: signage.room.status,
-      fileName: data.fileName
+      animationFileName: data.animationFileName
     }
 
     io.of(signageNameSpace)
@@ -241,5 +242,7 @@ function onDoneGenerated(
     io.of(controllerNameSpace)
       .in(signage.room.name)
       .emit(controllerEvent.updatedStatus, res)
+
+    socket.leave(signage.room.name)
   }
 }

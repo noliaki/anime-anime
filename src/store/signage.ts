@@ -39,12 +39,13 @@ export const getters: GetterTree<State, null> = {
       case Status.ControllerReady:
       case Status.Streaming:
       case Status.Shot:
+      case Status.StartGenerating:
         return 'TheStream'
 
       case Status.ImageGenerating:
         return 'TheGenerating'
 
-      case Status.imageGenerated:
+      case Status.FinishGenerating:
         return 'TheAnimationDisplay'
 
       default:
@@ -54,19 +55,18 @@ export const getters: GetterTree<State, null> = {
 }
 
 export const mutations: MutationTree<State> = {
-  identified(state: State, data: Responce): void {
-    state.socketId = data.socketId
-    state.roomName = data.roomName
-    state.status = data.status
-  },
   updatedStatus(state: State, data: Responce): void {
     if (data.status === Status.Streaming) {
       state.paused = false
     }
 
-    if (data.fileName) {
-      console.log(data.fileName)
-      state.animationFileName = data.fileName
+    if (data.animationFileName) {
+      console.log(data.animationFileName)
+      state.animationFileName = data.animationFileName
+    }
+
+    if (data.socketId) {
+      state.socketId = data.socketId
     }
 
     state.roomName = data.roomName
@@ -92,7 +92,7 @@ export const mutations: MutationTree<State> = {
     state.paused = false
     state.decided = false
     state.animationFileName = undefined
-    // state.videoImageData = null
+    state.videoScreenCanvas = null
   },
   setVideoImageData(state: State, videoEl: HTMLVideoElement): void {
     const canvas: HTMLCanvasElement = document.createElement('canvas')
@@ -114,57 +114,30 @@ export const actions: ActionTree<State, null> = {
   initIo({ commit }): void {
     signageIo = io('/signage')
 
-    signageIo
-      .on(
-        signageEvent.identified,
-        (data: Responce): void => {
-          commit('identified', data)
-        }
-      )
-      .on(
-        signageEvent.updatedStatus,
-        (data: Responce): void => {
-          console.log(signageEvent.updatedStatus)
-          console.log(data)
-          commit('updatedStatus', data)
-        }
-      )
-      .on(
-        signageEvent.changeFrame,
-        (data: Responce): void => {
-          console.log(data)
-          commit('changeFrameIndex', data.selectedIndex)
-        }
-      )
-      .on(
-        signageEvent.shot,
-        (data: Responce): void => {
-          console.log(data)
-          commit('pauseVideo')
-        }
-      )
-      .on(
-        signageEvent.retake,
-        (data: Responce): void => {
-          console.log(signageEvent.retake)
-          console.log(data)
-          commit('playVideo')
-        }
-      )
-      .on(
-        signageEvent.decided,
-        (data: Responce): void => {
-          console.log(signageEvent.decided)
-          console.log(data)
-          commit('decided')
-        }
-      )
+    signageIo.on(
+      'connect',
+      (): void => {
+        signageIo
+          .on(
+            signageEvent.updatedStatus,
+            (data: Responce): void => {
+              console.log(signageEvent.updatedStatus)
+              console.log(data)
+              commit('updatedStatus', data)
+            }
+          )
+          .on(
+            signageEvent.changeFrame,
+            (data: Responce): void => {
+              console.log(data)
+              commit('changeFrameIndex', data.selectedIndex)
+            }
+          )
+      }
+    )
   },
   startedStream(): void {
     signageIo.emit(signageEvent.startedStreaming)
-  },
-  pausedStream(): void {
-    signageIo.emit(signageEvent.pausedStreaming)
   },
   startGenerating(): void {
     signageIo.emit(signageEvent.startGenerating)

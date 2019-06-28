@@ -1,9 +1,9 @@
 <template>
   <div class="relative shadow-lg">
     <video ref="video" class="video"></video>
-    <div class="frame" :style="frameStyle"></div>
+    <div v-show="!isDecided" class="frame" :style="frameStyle"></div>
     <transition name="flash">
-      <div v-show="isPaused" class="flash"></div>
+      <div v-show="shouldPause" class="flash"></div>
     </transition>
   </div>
 </template>
@@ -17,6 +17,17 @@ interface State {
 }
 
 export default Vue.extend({
+  head() {
+    const frames = this.$store.getters['frame/items']
+
+    return {
+      link: frames.map(frame => ({
+        rel: 'preload',
+        as: 'image',
+        href: `/frame/${frame.files[0]}`
+      }))
+    }
+  },
   data(): State {
     return {
       stream: null
@@ -43,30 +54,33 @@ export default Vue.extend({
     selectedFrameIndex(): number | undefined {
       return this.$signage.selectedFrameIndex
     },
-    isPaused(): boolean {
-      return this.$signage.paused
+    shouldPause(): boolean {
+      return this.$signage.status >= Status.Shot
+    },
+    shouldPlay(): boolean {
+      return this.$signage.status === Status.Streaming
     },
     isDecided(): boolean {
-      return this.$signage.decided
+      return this.$signage.status === Status.StartGenerating
     }
   },
   watch: {
-    async isPaused(next): Promise<void> {
-      console.log('isPaused')
-      console.log(next)
-      const videoEl: HTMLVideoElement = this.$refs.video as HTMLVideoElement
-
-      if (this.$signage.status > Status.Shot) {
+    shouldPause(next): void {
+      if (!next) {
         return
       }
 
+      const videoEl: HTMLVideoElement = this.$refs.video as HTMLVideoElement
+      videoEl.pause()
+    },
+    async shouldPlay(next): Promise<void> {
       if (!next) {
-        await videoEl.play()
-        this.$store.dispatch('signage/startedStream')
-      } else {
-        videoEl.pause()
-        this.$store.dispatch('signage/pausedStream')
+        return
       }
+
+      const videoEl: HTMLVideoElement = this.$refs.video as HTMLVideoElement
+      await videoEl.play()
+      this.$store.dispatch('signage/startedStream')
     },
     isDecided(next): void {
       if (next) {

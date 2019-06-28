@@ -21,70 +21,12 @@ async function onConnect(socket: socketIo.Socket): Promise<void> {
   await controller.save()
 
   socket
-    // .on(controllerEvent.joinRoom, onJoinRoom(socket))
     .on(controllerEvent.startStreaming, onStartStreaming(socket))
     .on(controllerEvent.changeFrame, onChangeFrame(socket))
     .on(controllerEvent.shoot, onShoot(socket))
     .on(controllerEvent.retake, onRetake(socket))
     .on(controllerEvent.decide, onDecide(socket))
-
-  socket.emit(controllerEvent.identified, {
-    id: controller.id,
-    socketId: controller.socketId
-  })
 }
-
-// function onJoinRoom(socket: socketIo.Socket): (data: any) => Promise<void> {
-//   return async (data: any): Promise<void> => {
-//     const controller: Controller | undefined = await getController({
-//       socketId: socket.id
-//     })
-
-//     const room: Room | undefined = await getRepository(Room).findOne({
-//       where: {
-//         name: data.roomName
-//       }
-//     })
-
-//     if (!room || !controller) {
-//       socket.emit(controllerEvent.error, {
-//         message: 'controller or room is not found'
-//       })
-
-//       return
-//     }
-
-//     socket.join(room.name)
-//     controller.room = room
-//     await controller.save()
-//     console.log('success save controller')
-
-//     if (room.status !== Status.SignageReady) {
-//       console.log(`room status is not Created: ${Status[room.status]}`)
-//       socket.emit(controllerEvent.updatedStatus, {
-//         status: room.status
-//       })
-
-//       return
-//     }
-
-//     room.status = Status.ControllerReady
-//     await room.save()
-
-//     const res: Responce = {
-//       roomName: room.name,
-//       status: room.status
-//     }
-
-//     io.of(controllerNameSpace)
-//       .in(room.name)
-//       .emit(controllerEvent.updatedStatus, res)
-
-//     io.of(signageNameSpace)
-//       .in(room.name)
-//       .emit(controllerEvent.updatedStatus, res)
-//   }
-// }
 
 function onStartStreaming(
   socket: socketIo.Socket
@@ -114,7 +56,9 @@ function onStartStreaming(
 
     if (room.status !== Status.SignageReady) {
       socket.emit(controllerEvent.updatedStatus, {
-        status: room.status
+        status: room.status,
+        roomName: room.name,
+        animationFileName: room.animationFileName
       })
 
       return
@@ -157,11 +101,16 @@ function onShoot(socket: socketIo.Socket): (data: any) => Promise<void> {
 
     if (controller.room.status !== Status.Streaming) {
       socket.emit(controllerEvent.updatedStatus, {
-        status: controller.room.status
+        status: controller.room.status,
+        roomName: controller.room.name,
+        animationFileName: controller.room.animationFileName
       })
 
       return
     }
+
+    controller.room.status = Status.Shot
+    await controller.room.save()
 
     const res: Responce = {
       roomName: controller.room.name,
@@ -170,7 +119,11 @@ function onShoot(socket: socketIo.Socket): (data: any) => Promise<void> {
 
     io.of(signageNameSpace)
       .to(controller.room.name)
-      .emit(signageEvent.shot, res)
+      .emit(signageEvent.updatedStatus, res)
+
+    io.of(controllerNameSpace)
+      .to(controller.room.name)
+      .emit(controllerEvent.updatedStatus, res)
   }
 }
 
@@ -190,11 +143,16 @@ function onRetake(socket: socketIo.Socket): (data: any) => Promise<void> {
 
     if (controller.room.status !== Status.Shot) {
       socket.emit(controllerEvent.updatedStatus, {
-        status: controller.room.status
+        status: controller.room.status,
+        roomName: controller.room.name,
+        animationFileName: controller.room.animationFileName
       })
 
       return
     }
+
+    controller.room.status = Status.Streaming
+    await controller.room.save()
 
     const res: Responce = {
       roomName: controller.room.name,
@@ -203,7 +161,11 @@ function onRetake(socket: socketIo.Socket): (data: any) => Promise<void> {
 
     io.of(signageNameSpace)
       .to(controller.room.name)
-      .emit(signageEvent.retake, res)
+      .emit(signageEvent.updatedStatus, res)
+
+    io.of(controllerNameSpace)
+      .to(controller.room.name)
+      .emit(controllerEvent.updatedStatus, res)
   }
 }
 
@@ -226,11 +188,16 @@ function onDecide(socket: socketIo.Socket) {
 
     if (controller.room.status !== Status.Shot) {
       socket.emit(controllerEvent.updatedStatus, {
-        status: controller.room.status
+        status: controller.room.status,
+        roomName: controller.room.name,
+        animationFileName: controller.room.animationFileName
       })
 
       return
     }
+
+    controller.room.status = Status.StartGenerating
+    await controller.room.save()
 
     const res: Responce = {
       roomName: controller.room.name,
@@ -239,7 +206,11 @@ function onDecide(socket: socketIo.Socket) {
 
     io.of(signageNameSpace)
       .in(controller.room.name)
-      .emit(signageEvent.decided, res)
+      .emit(signageEvent.updatedStatus, res)
+
+    io.of(controllerNameSpace)
+      .in(controller.room.name)
+      .emit(controllerEvent.updatedStatus, res)
   }
 }
 
@@ -252,6 +223,16 @@ function onChangeFrame(socket: socketIo.Socket): (data: any) => Promise<void> {
     if (!(controller && controller.room)) {
       socket.emit(controllerEvent.error, {
         message: 'controller is not found'
+      })
+
+      return
+    }
+
+    if (controller.room.status !== Status.Streaming) {
+      socket.emit(controllerEvent.updatedStatus, {
+        status: controller.room.status,
+        roomName: controller.room.name,
+        animationFileName: controller.room.animationFileName
       })
 
       return

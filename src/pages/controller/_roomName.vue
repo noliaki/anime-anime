@@ -12,6 +12,7 @@ import TheWaiting from '~/components/TheWaiting.vue'
 import TheReady from '~/components/Controller/TheReady.vue'
 import TheConnectingSignage from '~/components/Controller/TheConnectingSignage.vue'
 import TheOperation from '~/components/Controller/TheOperation.vue'
+import TheGenerating from '~/components/Controller/TheGenerating.vue'
 import TheAnimationDisplay from '~/components/Controller/TheAnimationDisplay.vue'
 
 export default Vue.extend({
@@ -20,6 +21,7 @@ export default Vue.extend({
     TheReady,
     TheConnectingSignage,
     TheOperation,
+    TheGenerating,
     TheAnimationDisplay
   },
   computed: {

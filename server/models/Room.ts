@@ -40,6 +40,13 @@ export class Room extends BaseEntity {
   })
   status: Status = Status.SignageReady
 
+  @Column({
+    type: 'varchar',
+    unique: true,
+    default: null
+  })
+  animationFileName?: string
+
   @CreateDateColumn()
   createdAt?: Date
 
