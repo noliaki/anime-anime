@@ -67,11 +67,7 @@ export default app
   .use(passport.session())
   .get(
     '/oauth/:filename',
-    (
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): void => {
+    (req: any, res: express.Response, next: express.NextFunction): void => {
       if (req.session) {
         req.session.filename = req.params.filename
       }
@@ -81,11 +77,7 @@ export default app
   )
   .get(
     '/callback',
-    (
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ): void => {
+    (req: any, res: express.Response, next: express.NextFunction): void => {
       passport.authenticate('twitter', {
         session: true,
         successRedirect: `/controller/share/${req.session &&
@@ -95,7 +87,7 @@ export default app
   )
   .post(
     'upload-media',
-    async (req: express.Request, res: express.Response): Promise<void> => {
+    async (req: any, res: express.Response): Promise<void> => {
       const client: Twitter = new Twitter({
         consumer_key: consumerKey,
         consumer_secret: consumerSecret,
