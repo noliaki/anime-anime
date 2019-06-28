@@ -12,7 +12,6 @@
     "nodemon": "nodemon",
     "build": "nuxt build",
     "start": "ts-node -r tsconfig-paths/register ./server/index.ts",
-    "cron": "ts-node ./cron/remove-img.ts",
     "generate": "nuxt generate",
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint",

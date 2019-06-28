@@ -9,6 +9,7 @@ import { createSocketServer } from './web-socket'
 import { Signage } from './models/Signage'
 import { Controller } from './models/Controller'
 import { Room } from './models/Room'
+import workerJob from './cron/remove-img'
 
 const isProd: boolean = process.env.NODE_ENV === 'production'
 
@@ -65,3 +66,4 @@ async function start() {
 }
 
 start()
+workerJob.start()
