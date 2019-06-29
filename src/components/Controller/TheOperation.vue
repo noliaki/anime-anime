@@ -8,16 +8,15 @@
       >
         SHOOT
       </button>
-      <div
-        class="select-frame rounded-lg bg-white border border-purple-200 mt-5"
-      >
-        <p class="text-center font-bold border-b border-purple-200 py-2">
+      <div class="select-frame mt-5">
+        <p class="text-center font-bold py-2">
           select frame
         </p>
-        <div class="flex text-xs px-5 py-2">
+        <div class="flex w-screen border-b border-t border-purple-200">
           <button
             type="button"
-            class="frameBtn text-purple-700 border border-purple-500 rounded-full h-16 w-16 flex items-center justify-center"
+            class="frameBtn text-xs"
+            :class="{ 'is-selected': selectedFrameIndex === undefined }"
             @click.prevent="onClickSelectFrame(undefined)"
           >
             no frame
@@ -25,12 +24,12 @@
           <button
             v-for="(frame, index) in frames"
             :key="`frame-btn-${index}`"
-            class="frameBtn text-purple-700 border border-purple-500 rounded-full h-16 w-16 flex items-center justify-center"
+            class="frameBtn border-l border-purple-200"
+            :class="{ 'is-selected': selectedFrameIndex === index }"
+            :style="`background-image: url(/frame/${frame.files[0]});`"
             type="button"
             @click.prevent="onClickSelectFrame(index)"
-          >
-            frame {{ index + 1 }}
-          </button>
+          ></button>
         </div>
       </div>
     </div>
@@ -67,6 +66,9 @@ export default Vue.extend({
     },
     frames(): any {
       return this.$store.getters['frame/items']
+    },
+    selectedFrameIndex(): undefined | number {
+      return this.$controller.selectedFrameIndex
     }
   },
   methods: {
@@ -120,7 +122,23 @@ export default Vue.extend({
     transform 300ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.frameBtn + .frameBtn {
-  margin-left: 1em;
+.frameBtn {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 0;
+  display: block;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+.frameBtn.is-selected {
+  background-color: #e9d8fd;
+}
+
+.frameBtn + .frameBtn:before {
+  content: '';
+  display: block;
+  width: 100%;
+  padding-top: 75%;
 }
 </style>

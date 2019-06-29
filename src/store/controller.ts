@@ -12,6 +12,7 @@ export interface State {
   status?: Status
   waitResponse: boolean
   animationFileName?: string
+  selectedFrameIndex?: number
 }
 
 export const state: () => State = (): State => ({
@@ -19,7 +20,8 @@ export const state: () => State = (): State => ({
   roomName: undefined,
   status: Status.SignageReady,
   waitResponse: false,
-  animationFileName: undefined
+  animationFileName: undefined,
+  selectedFrameIndex: undefined
 })
 
 export const getters: GetterTree<State, null> = {
@@ -72,6 +74,9 @@ export const mutations: MutationTree<State> = {
   },
   recieveRequest(state: State): void {
     state.waitResponse = false
+  },
+  changeFrameIndex(state: State, selectedIndex: number | undefined): void {
+    state.selectedFrameIndex = selectedIndex
   }
 }
 
@@ -100,6 +105,7 @@ export const actions: ActionTree<State, null> = {
             (data: any): void => {
               console.log(data)
               commit('recieveRequest')
+              commit('changeFrameIndex', data.selectedIndex)
             }
           )
       }
