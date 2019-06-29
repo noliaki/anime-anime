@@ -15,8 +15,7 @@ const workerJob: CronJob = new CronJob({
     await scanDir(tempPath)
     await scanDir(animationPath)
     console.log('finish removing!')
-  },
-  start: true
+  }
 })
 
 function scanDir(targetDir: string): Promise<void> {

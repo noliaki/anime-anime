@@ -66,4 +66,6 @@ async function start() {
 }
 
 start()
-workerJob.start()
+if (isProd) {
+  workerJob.start()
+}
