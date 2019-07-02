@@ -6,15 +6,21 @@
       </transition>
       <div v-show="showLoading" class="loading"></div>
     </div>
-    <div class="text-center">
+    <div v-show="!showImg" class="text-center">
       <button
-        v-show="!showImg"
         type="button"
         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
         @click.prevent="onClickDownload"
       >
         DOWNLOAD
       </button>
+    </div>
+    <div v-show="showImg" class="text-center">
+      <a
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+        :href="twitterLoginURL"
+        >login Twitter</a
+      >
     </div>
   </div>
 </template>
@@ -37,6 +43,16 @@ export default Vue.extend({
     },
     showLoading(): boolean {
       return this.showImg && !this.loadedImg
+    },
+    twitterLoginURL(): string {
+      if (!this.$controller.animationFileName) {
+        return ''
+      }
+
+      return `/api/twitter/oauth/${this.$controller.animationFileName.replace(
+        /\.gif$/,
+        ''
+      )}`
     }
   },
   mounted(): void {

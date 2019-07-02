@@ -4,6 +4,7 @@ import passport from 'passport'
 import { Strategy, Profile } from 'passport-twitter'
 import session from 'express-session'
 import Twitter from 'twitter'
+import bodyParser from 'body-parser'
 
 const isProd: boolean = process.env.NODE_ENV === 'production'
 
@@ -65,6 +66,7 @@ export default app
   )
   .use(passport.initialize())
   .use(passport.session())
+  .use(bodyParser.json())
   .get(
     '/oauth/:filename',
     (req: any, res: express.Response, next: express.NextFunction): void => {
@@ -86,8 +88,15 @@ export default app
     }
   )
   .post(
-    'upload-media',
+    '/upload-media',
     async (req: any, res: express.Response): Promise<void> => {
+      console.log('upload-media')
+      if (!req.user) {
+        res.status(500).json({
+          error: 'no token'
+        })
+      }
+
       const client: Twitter = new Twitter({
         consumer_key: consumerKey,
         consumer_secret: consumerSecret,
@@ -95,53 +104,67 @@ export default app
         access_token_secret: req.user.secretToken
       })
 
-      const mediaId: string = await uploadMedia(client, req.body.fileName)
+      const mediaId: string | any = await uploadMedia(
+        client,
+        req.body.fileName
+      ).catch((err: any) => err)
 
-      if (mediaId) {
-        client.post(
-          'statuses/update',
-          {
-            media_ids: mediaId,
-            status: req.body.text
-          },
-          (error: any): void => {
-            if (error) {
-              res.status(500).json({
-                error
-              })
+      console.log(mediaId)
 
-              return
-            }
-
-            res.status(200).json({
-              message: 'share ok'
-            })
-          }
-        )
+      if (typeof mediaId !== 'string') {
+        console.log(mediaId.error)
+        res.status(500).json(mediaId.error)
+        return
       }
 
-      res.status(200).json({
-        message: 'not shared'
-      })
+      client.post(
+        'statuses/update',
+        {
+          media_ids: mediaId,
+          status: req.body.text
+        },
+        (error: any): void => {
+          if (error) {
+            res.status(500).json({
+              error
+            })
+
+            return
+          }
+
+          res.status(200).json({
+            message: 'share ok'
+          })
+        }
+      )
     }
   )
 
-async function uploadMedia(client: Twitter, fileName: string): Promise<string> {
-  const mediaFileName: string = `${__dirname}/../static/${fileName}`
-  const mediaSize: number | void = await getMediaSize(mediaFileName)
-  const mediaId: string | void = await getMediaId(client, mediaSize)
+async function uploadMedia(
+  client: Twitter,
+  fileName: string
+): Promise<string | any> {
+  const mediaFilePath: string = `${__dirname}/../static/animation-img/${fileName}.gif`
 
-  await appendMediaData(client, mediaId, mediaFileName)
-  await finalizeUpload(client, mediaId)
+  try {
+    const mediaSize: number | void = await getMediaSize(mediaFilePath)
+    const mediaId: string | void = await mediaUploadInit(client, mediaSize)
+    await mediaUploadAppend(client, mediaId, mediaFilePath)
+    await mediaUploadFinalize(client, mediaId)
 
-  return mediaId
+    return mediaId
+  } catch (error) {
+    return {
+      error
+    }
+  }
 }
 
-function getMediaSize(fileName: string): Promise<number> {
+function getMediaSize(filePath: string): Promise<number> {
   return new Promise(
     (resolve: (size: number) => void, reject: (reason: any) => void): void => {
       fs.stat(
-        fileName,
+        filePath,
         (error: any, stats: fs.Stats): void => {
           if (error) {
             reject(error)
@@ -155,7 +178,7 @@ function getMediaSize(fileName: string): Promise<number> {
   )
 }
 
-function getMediaId(client: Twitter, mediaSize: number): Promise<string> {
+function mediaUploadInit(client: Twitter, mediaSize: number): Promise<string> {
   return new Promise(
     (resolve: (size: string) => void, reject: (reason: any) => void): void => {
       client.post(
@@ -178,18 +201,15 @@ function getMediaId(client: Twitter, mediaSize: number): Promise<string> {
   )
 }
 
-function appendMediaData(
+function mediaUploadAppend(
   client: Twitter,
   mediaId: string,
-  fileName: string
-): Promise<boolean> {
+  filePath: string
+): Promise<void> {
   return new Promise(
-    (
-      resolve: (result: boolean) => void,
-      reject: (reason: any) => void
-    ): void => {
+    (resolve: () => void, reject: (reason: any) => void): void => {
       let segmentIndex: number = 0
-      fs.createReadStream(fileName)
+      fs.createReadStream(filePath)
         .on(
           'data',
           (chunk: any[]): void => {
@@ -207,7 +227,7 @@ function appendMediaData(
           'end',
           (): void => {
             console.log('end')
-            resolve(true)
+            resolve()
           }
         )
         .on(
@@ -222,7 +242,7 @@ function appendMediaData(
   )
 }
 
-function finalizeUpload(
+function mediaUploadFinalize(
   client: Twitter,
   mediaId: string
 ): Promise<Twitter.ResponseData> {
@@ -239,7 +259,7 @@ function finalizeUpload(
         },
         (error: any, data: Twitter.ResponseData): void => {
           if (error) {
-            console.error('Error: finalizeUpload')
+            console.error('Error: mediaUploadFinalize')
             reject(error)
             return
           }

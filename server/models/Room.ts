@@ -9,9 +9,9 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 
-import uuid from 'uuid/v1'
-
 import { Status } from '@@/common/Status'
+import { getUuid } from '@@/common/helper'
+
 import { Signage } from './Signage'
 import { Controller } from './Controller'
 
@@ -55,6 +55,6 @@ export class Room extends BaseEntity {
 
   constructor() {
     super()
-    this.name = uuid()
+    this.name = getUuid()
   }
 }

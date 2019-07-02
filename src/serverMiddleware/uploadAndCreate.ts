@@ -1,7 +1,7 @@
 import express from 'express'
 import multer from 'multer'
 import imagemagick from 'imagemagick'
-import uuid from 'uuid/v1'
+import { getUuid } from '@@/common/helper'
 
 const tempImageDir: string = `${__dirname}/../../tmp`
 const docRoot: string = `${__dirname}/../../src/static/animation-img`
@@ -24,7 +24,7 @@ const storage: multer.StorageEngine = multer.diskStorage({
     console.log(file)
     console.log('')
     const extenstion: string = getImageExtention(file)
-    callBack(null, `${uuid()}${extenstion}`)
+    callBack(null, `${getUuid()}${extenstion}`)
   }
 })
 
@@ -50,7 +50,7 @@ const app: express.Router = express.Router()
 function createAnimation(fileNames: string[]): Promise<string> {
   return new Promise(
     (resolve: (fileName: any) => void, reject: (error: any) => void): void => {
-      const gifFileName: string = uuid()
+      const gifFileName: string = getUuid()
 
       imagemagick.convert(
         [
