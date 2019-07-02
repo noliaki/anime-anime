@@ -2,8 +2,9 @@ import * as http from 'http'
 import express from 'express'
 import * as consola from 'consola'
 import { Nuxt, Builder, NuxtConfigurationServer } from 'nuxt'
-import { createConnection, ConnectionOptions } from 'typeorm'
+import { createConnection, Connection, ConnectionOptions } from 'typeorm'
 import config from '../nuxt.config'
+import { sessionQuery } from './session.sql'
 import { createSocketServer } from './web-socket'
 
 import { Signage } from './models/Signage'
@@ -39,7 +40,8 @@ const app: express.Express = (express as any)()
 const server: http.Server = http.createServer(app)
 
 async function start() {
-  await createConnection(connectOption)
+  const connection: Connection = await createConnection(connectOption)
+  await connection.query(sessionQuery)
   // Init Nuxt.js
   const nuxt: Nuxt = new Nuxt(config)
 
