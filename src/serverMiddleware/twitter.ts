@@ -5,6 +5,7 @@ import { Strategy, Profile } from 'passport-twitter'
 import session from 'express-session'
 import Twitter from 'twitter'
 import bodyParser from 'body-parser'
+import connectPgSimple from 'connect-pg-simple'
 
 const isProd: boolean = process.env.NODE_ENV === 'production'
 
@@ -16,6 +17,7 @@ const consumerSecret: string = isProd
   : require('./twitter-credential').consumerSecret
 
 const app: express.Router = express.Router()
+const PgSession: typeof connectPgSimple.PGStore = connectPgSimple(session)
 
 passport.serializeUser(
   (tokens: any, done: (err: any, id?: unknown) => void): void => {
@@ -59,7 +61,12 @@ passport.use(
 export default app
   .use(
     session({
-      secret: 'secret',
+      store: isProd
+        ? new PgSession({
+            conString: process.env.DATABASE_URL
+          })
+        : undefined,
+      secret: process.env.COOKIE_SECRET || 'secret',
       resave: false,
       saveUninitialized: false
     })

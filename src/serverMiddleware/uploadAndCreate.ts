@@ -1,7 +1,7 @@
 import express from 'express'
 import multer from 'multer'
 import imagemagick from 'imagemagick'
-import { getUuid } from '@@/common/helper'
+import { getUuid } from '../../common/helper'
 
 const tempImageDir: string = `${__dirname}/../../tmp`
 const docRoot: string = `${__dirname}/../../src/static/animation-img`
