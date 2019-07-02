@@ -40,7 +40,9 @@ passport.use(
     {
       consumerKey,
       consumerSecret,
-      callbackURL: 'http://localhost:3000/api/twitter/callback'
+      callbackURL: `${
+        isProd ? 'https://anime-anime.herokuapp.com' : 'http://localhost:3000'
+      }/api/twitter/callback`
     },
     (
       token: string,
