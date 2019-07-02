@@ -1,6 +1,28 @@
 <template>
-  <div v-show="controllerUrl" class="bg-white">
-    <canvas ref="canvas" class="shadow"></canvas>
+  <div>
+    <div v-show="controllerUrl">
+      <canvas ref="canvas" class="shadow mx-auto"></canvas>
+    </div>
+
+    <div
+      class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mt-8"
+      role="alert"
+    >
+      <ol class="list-decimal pl-4">
+        <li>Read the above QR code with your smartphone</li>
+        <li>[Smartphone] Tap the "START" button to connect</li>
+        <li>The camera starts up</li>
+        <li>Select a frame on your smartphone and tap the "SHOOT" button</li>
+        <li>
+          Tap the "Make it" button or tap the "RETAKE" button if you want to
+          retake
+        </li>
+        <li>And then generate a animation image</li>
+      </ol>
+      <p class="font-bold mt-3">
+        ※ The taken image and animation image will be deleted in 10 minutes
+      </p>
+    </div>
   </div>
 </template>
 

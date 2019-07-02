@@ -1,5 +1,5 @@
 <template>
-  <div class="relative shadow-lg">
+  <div class="relative shadow-lg video-wrapper">
     <video ref="video" class="video"></video>
     <div v-show="!isDecided" class="frame" :style="frameStyle"></div>
     <transition name="flash">
@@ -131,6 +131,7 @@ export default Vue.extend({
 <style scoped>
 .video {
   transform: scaleX(-1);
+  background-color: #141018;
 }
 
 .frame {
