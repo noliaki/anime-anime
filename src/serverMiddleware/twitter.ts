@@ -20,20 +20,14 @@ const app: express.Router = express.Router()
 const PgSession: typeof connectPgSimple.PGStore = connectPgSimple(session)
 
 passport.serializeUser(
-  (tokens: any, done: (err: any, id?: unknown) => void): void => {
-    console.log('RUN: passport.serializeUser')
-    console.log(tokens)
-    return done(null, {
+  (tokens: any, done: (err: any, id?: unknown) => void): void =>
+    done(null, {
       ...tokens
     })
-  }
 )
 passport.deserializeUser(
-  (tokens: any, done: (err: any, id?: unknown) => void): void => {
-    console.log('RUN: passport.deserializeUser')
-    console.log(tokens)
-    return done(null, tokens)
-  }
+  (tokens: any, done: (err: any, id?: unknown) => void): void =>
+    done(null, tokens)
 )
 passport.use(
   new Strategy(
@@ -49,14 +43,11 @@ passport.use(
       secretToken: string,
       profile: Profile,
       done: (error: any, user?: any) => void
-    ): void => {
-      console.log('Strategy')
-      console.log(token, secretToken)
+    ): void =>
       done(null, {
         token,
         secretToken
       })
-    }
   )
 )
 
@@ -118,11 +109,12 @@ export default app
         req.body.fileName
       ).catch((err: any) => err)
 
-      console.log(mediaId)
-
       if (typeof mediaId !== 'string') {
         console.log(mediaId.error)
-        res.status(500).json(mediaId.error)
+        res.status(500).json({
+          error: mediaId.error
+        })
+
         return
       }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="flex fixed w-full h-full bg-gray-100">
-    <div class="m-auto">
+    <div class="m-auto p-2">
       <nuxt />
     </div>
   </div>
