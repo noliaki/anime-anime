@@ -8,11 +8,11 @@
       >
         SHOOT
       </button>
-      <div class="select-frame mt-5">
+      <div class="select-frame mt-5 w-full">
         <p class="text-center font-bold py-2">
           select frame
         </p>
-        <div class="flex w-screen border-b border-t border-purple-200">
+        <div class="flex border-b border-t border-purple-200">
           <button
             type="button"
             class="frameBtn text-xs"

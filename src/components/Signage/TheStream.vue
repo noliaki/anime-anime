@@ -1,10 +1,12 @@
 <template>
-  <div class="relative shadow-lg video-wrapper">
-    <video ref="video" class="video"></video>
-    <div v-show="!isDecided" class="frame" :style="frameStyle"></div>
-    <transition name="flash">
-      <div v-show="shouldPause" class="flash"></div>
-    </transition>
+  <div class="flex items-center justify-center">
+    <div class="relative video-wrapper">
+      <video ref="video" class="video shadow-lg"></video>
+      <div v-show="!isDecided" class="frame" :style="frameStyle"></div>
+      <transition name="flash">
+        <div v-show="shouldPause" class="flash"></div>
+      </transition>
+    </div>
   </div>
 </template>
 

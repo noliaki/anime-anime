@@ -1,5 +1,7 @@
 <template>
-  <div class="generating">Generating image...</div>
+  <div class="flex items-center justify-center">
+    <div class="generating">Generating image...</div>
+  </div>
 </template>
 <script lang="ts">
 import Vue from 'vue'

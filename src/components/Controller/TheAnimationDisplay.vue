@@ -2,7 +2,13 @@
   <div>
     <div class="relative img-wrapper">
       <transition name="img">
-        <img v-show="showImg" :src="animationSrc" alt="" @load="onLoadImg" />
+        <img
+          v-show="showImg"
+          :src="animationSrc"
+          class="mx-auto"
+          alt=""
+          @load="onLoadImg"
+        />
       </transition>
       <div v-show="showLoading" class="loading"></div>
     </div>
@@ -15,11 +21,11 @@
         DOWNLOAD
       </button>
     </div>
-    <div v-show="showImg" class="text-center">
+    <div v-show="showImg" class="text-center mt-5">
       <a
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+        class="twitter-button text-white font-bold px-4 rounded-full"
         :href="twitterLoginURL"
-        >login Twitter</a
+        ><img src="~/static/twitter-logo.svg" alt="" /> Login</a
       >
     </div>
   </div>
@@ -116,5 +122,17 @@ export default Vue.extend({
   to {
     transform: rotate(360deg);
   }
+}
+
+.twitter-button {
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  background-color: #1da1f2;
+}
+
+.twitter-button > img {
+  width: 3em;
 }
 </style>

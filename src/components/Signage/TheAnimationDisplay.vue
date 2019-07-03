@@ -3,6 +3,7 @@
     <img
       :src="animationSrc"
       alt="anime-anime"
+      class="mx-auto shadow-lg"
       :class="{ 'is-loaded': loaded }"
       @load="onLoad"
     />

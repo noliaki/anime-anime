@@ -1,21 +1,22 @@
 <template>
   <div class="relative">
     <div class="text-center">
-      <img class="shadow-lg" :src="imgSrc" alt="" />
+      <img class="shadow-lg mx-auto" :src="imgSrc" alt="" />
     </div>
-    <div class="mt-5">
+    <div class="mt-5 max-w-xl mx-auto">
       <textarea
         v-model="text"
-        class="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full border border-teal-500"
+        rows="5"
+        class="bg-white shadow-md rounded p-3 w-full twitter-share"
       ></textarea>
     </div>
-    <div class="text-center">
+    <div class="text-center mt-3">
       <button
         type="button"
-        class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full"
+        class="twitter-share-button mx-auto flex items-center justify-center text-white font-bold rounded-full"
         @click.prevent="onClickShare"
       >
-        Share
+        <img src="~/static/twitter-logo.svg" alt="" />
       </button>
     </div>
     <div v-show="isFetching" class="fetching overlay"></div>
@@ -58,7 +59,7 @@ export default Vue.extend({
         },
         body: JSON.stringify({
           fileName: this.$route.params.filename,
-          text: encodeURIComponent(this.text)
+          text: this.text
         })
       })
         .then(res => res.json())
@@ -98,8 +99,8 @@ export default Vue.extend({
   width: 50px;
   height: 50px;
   border-radius: 999em;
-  border: 3px solid #0af;
-  border-top-color: #00aaff59;
+  border: 3px solid #1da1f2;
+  border-top-color: #1da0f233;
   animation: loading 0.4s linear 0s infinite normal forwards;
 }
 
@@ -113,5 +114,21 @@ export default Vue.extend({
   to {
     transform: rotate(360deg);
   }
+}
+
+.twitter-share {
+  border: 2px solid #1da1f2;
+}
+
+.twitter-share-button {
+  width: 80px;
+  height: 80px;
+  padding: 10px;
+  overflow: hidden;
+  background-color: #1da1f2;
+}
+
+.twitter-share-button > img {
+  width: 100%;
 }
 </style>

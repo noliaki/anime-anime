@@ -104,40 +104,19 @@ export default app
         access_token_secret: req.user.secretToken
       })
 
-      const mediaId: string | any = await uploadMedia(
-        client,
-        req.body.fileName
-      ).catch((err: any) => err)
+      try {
+        const mediaId: string = await uploadMedia(client, req.body.fileName)
 
-      if (typeof mediaId !== 'string') {
-        console.log(mediaId.error)
-        res.status(500).json({
-          error: mediaId.error
+        await statusesUpdate(client, mediaId, req.body.text)
+
+        res.status(200).json({
+          message: 'share ok'
         })
-
-        return
+      } catch (error) {
+        res.status(500).json({
+          error
+        })
       }
-
-      client.post(
-        'statuses/update',
-        {
-          media_ids: mediaId,
-          status: req.body.text
-        },
-        (error: any): void => {
-          if (error) {
-            res.status(500).json({
-              error
-            })
-
-            return
-          }
-
-          res.status(200).json({
-            message: 'share ok'
-          })
-        }
-      )
     }
   )
 
@@ -262,6 +241,36 @@ function mediaUploadFinalize(
           if (error) {
             console.error('Error: mediaUploadFinalize')
             reject(error)
+            return
+          }
+
+          resolve(data)
+        }
+      )
+    }
+  )
+}
+
+function statusesUpdate(
+  client: Twitter,
+  mediaId: string,
+  status: string
+): Promise<Twitter.ResponseData> {
+  return new Promise(
+    (
+      resolve: (data: Twitter.ResponseData) => void,
+      reject: (error: any) => void
+    ): void => {
+      client.post(
+        'statuses/update',
+        {
+          media_ids: mediaId,
+          status: status
+        },
+        (error: any, data: Twitter.ResponseData): void => {
+          if (error) {
+            reject(error)
+
             return
           }
 

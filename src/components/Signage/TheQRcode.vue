@@ -1,11 +1,13 @@
 <template>
   <div>
-    <div v-show="controllerUrl">
-      <canvas ref="canvas" class="shadow mx-auto"></canvas>
+    <div v-show="controllerUrl" class="text-center">
+      <a :href="controllerUrl" target="_blank">
+        <canvas ref="canvas" class="shadow mx-auto"></canvas>
+      </a>
     </div>
 
     <div
-      class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mt-8"
+      class="max-w-xl mx-auto bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mt-8"
       role="alert"
     >
       <ol class="list-decimal pl-4">
@@ -79,3 +81,8 @@ export default Vue.extend({
   }
 })
 </script>
+<style scoped>
+a {
+  display: inline-block;
+}
+</style>

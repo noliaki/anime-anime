@@ -41,7 +41,9 @@ const server: http.Server = http.createServer(app)
 
 async function start() {
   const connection: Connection = await createConnection(connectOption)
-  await connection.query(sessionQuery)
+  if (isProd) {
+    await connection.query(sessionQuery)
+  }
   // Init Nuxt.js
   const nuxt: Nuxt = new Nuxt(config)
 
