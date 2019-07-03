@@ -21,11 +21,38 @@
     </div>
     <div v-show="isFetching" class="fetching overlay"></div>
     <div v-show="doneFetch" class="result overlay text-center">
-      <p v-show="!hasError" class="m-auto">
-        Done!!!<br />See
-        <a href="https://twitter.com/" target="_blank">https://twitter.com/</a>
-      </p>
-      <p v-show="hasError" class="m-auto">Error Happened!<br />Sorry...</p>
+      <div
+        v-show="!hasError"
+        class="bg-blue-100 border-4 border-blue-500 text-blue-700 px-4 py-3 m-auto rounded-lg"
+        role="alert"
+      >
+        <p class="font-bold">
+          Done!!!
+        </p>
+        <p>
+          See:
+          <a href="https://twitter.com/" target="_blank" style="color: #1da1f2"
+            >https://twitter.com/</a
+          >
+        </p>
+        <div class="text-center mt-4">
+          <button type="button" @click.prevent="doneFetch = false">
+            close
+          </button>
+        </div>
+      </div>
+      <div
+        v-show="hasError"
+        class="bg-red-100 border-4 border-red-500 text-red-700 px-4 py-3 m-auto rounded-lg"
+        role="alert"
+      >
+        <p class="font-bold">Error Happened!<br />Sorry...</p>
+        <div class="text-center mt-4">
+          <button type="button" @click.prevent="doneFetch = false">
+            close
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -58,12 +85,13 @@ export default Vue.extend({
           'Content-Type': 'application/json; charset=utf-8'
         },
         body: JSON.stringify({
-          fileName: this.$route.params.filename,
           text: this.text
         })
       })
         .then(res => res.json())
-        .catch(error => error)
+        .catch(error => ({
+          error
+        }))
 
       if (result.error) {
         this.hasError = true

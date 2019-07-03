@@ -90,8 +90,7 @@ export default app
   .post(
     '/upload-media',
     async (req: any, res: express.Response): Promise<void> => {
-      console.log('upload-media')
-      if (!req.user) {
+      if (!req.user || !req.session.filename) {
         res.status(500).json({
           error: 'no token'
         })
@@ -104,9 +103,20 @@ export default app
         access_token_secret: req.user.secretToken
       })
 
-      try {
-        const mediaId: string = await uploadMedia(client, req.body.fileName)
+      const mediaId: string | { error: any } = await uploadMedia(
+        client,
+        req.session.filename
+      )
 
+      if (typeof mediaId !== 'string') {
+        res.status(500).json({
+          error: mediaId.error
+        })
+
+        return
+      }
+
+      try {
         await statusesUpdate(client, mediaId, req.body.text)
 
         res.status(200).json({
