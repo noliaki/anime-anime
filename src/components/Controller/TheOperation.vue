@@ -12,7 +12,7 @@
         <p class="text-center font-bold py-2">
           select frame
         </p>
-        <div class="flex border-b border-t border-purple-200">
+        <div class="flex flex-wrap border border-purple-200">
           <button
             type="button"
             class="frameBtn text-xs"
@@ -24,8 +24,10 @@
           <button
             v-for="(frame, index) in frames"
             :key="`frame-btn-${index}`"
-            class="frameBtn border-l border-purple-200"
-            :class="{ 'is-selected': selectedFrameIndex === index }"
+            class="frameBtn frameBtn--hasFrame"
+            :class="{
+              'is-selected': selectedFrameIndex === index
+            }"
             :style="`background-image: url(/frame/${frame.files[0]});`"
             type="button"
             @click.prevent="onClickSelectFrame(index)"
@@ -125,14 +127,23 @@ export default Vue.extend({
 .frameBtn {
   flex-grow: 1;
   flex-shrink: 0;
-  flex-basis: 0;
+  flex-basis: calc(100% / 3);
   display: block;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  border-left: 1px solid #e2e8f0;
 }
 
 .frameBtn.is-selected {
   background-color: #e9d8fd;
+}
+
+.frameBtn:nth-child(n + 3) {
+  border-top: 1px solid #e2e8f0;
+}
+
+.frameBtn:nth-child(3n + 1) {
+  border-left: none;
 }
 
 .frameBtn + .frameBtn:before {
