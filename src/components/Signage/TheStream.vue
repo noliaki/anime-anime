@@ -1,7 +1,11 @@
 <template>
   <div class="flex items-center justify-center">
     <div class="relative video-wrapper">
-      <video ref="video" class="video shadow-lg"></video>
+      <video
+        ref="video"
+        class="video shadow-lg"
+        :class="{ 'is-paused': shouldPause }"
+      ></video>
       <div v-show="!isDecided" class="frame" :style="frameStyle"></div>
       <transition name="flash">
         <div v-show="shouldPause" class="flash"></div>
@@ -134,6 +138,10 @@ export default Vue.extend({
 .video {
   transform: scaleX(-1);
   background-color: #141018;
+}
+
+.video.is-paused {
+  transform: scaleX(1);
 }
 
 .frame {

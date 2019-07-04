@@ -9,7 +9,7 @@
 import Vue from 'vue'
 import TheQRcode from '~/components/Signage/TheQRcode.vue'
 import TheStream from '~/components/Signage/TheStream.vue'
-import TheWaiting from '~/components/TheWaiting.vue'
+import TheWaiting from '~/components/Signage/TheWaiting.vue'
 import TheAnimationDisplay from '~/components/Signage/TheAnimationDisplay.vue'
 import TheGenerating from '~/components/Signage/TheGenerating.vue'
 

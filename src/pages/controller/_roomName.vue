@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import TheWaiting from '~/components/TheWaiting.vue'
+import TheWaiting from '~/components/Controller/TheWaiting.vue'
 import TheReady from '~/components/Controller/TheReady.vue'
 import TheConnectingSignage from '~/components/Controller/TheConnectingSignage.vue'
 import TheOperation from '~/components/Controller/TheOperation.vue'
