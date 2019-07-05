@@ -19,7 +19,9 @@
         <img src="~/static/twitter-logo.svg" alt="" />
       </button>
     </div>
-    <div v-show="isFetching" class="fetching overlay"></div>
+    <div v-show="isFetching" class="overlay flex items-center justify-center">
+      <base-waiting>sharing</base-waiting>
+    </div>
     <div v-show="doneFetch" class="result overlay text-center">
       <div
         v-show="!hasError"
@@ -58,7 +60,12 @@
 </template>
 <script lang="ts">
 import Vue from 'vue'
+import BaseWaiting from '~/components/BaseWaiting.vue'
+
 export default Vue.extend({
+  components: {
+    BaseWaiting
+  },
   data() {
     return {
       text: '',
@@ -113,23 +120,6 @@ export default Vue.extend({
   bottom: 0;
   left: 0;
   background-color: rgba(255, 255, 255, 0.8);
-}
-
-.fetching::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: auto;
-  display: block;
-  width: 50px;
-  height: 50px;
-  border-radius: 999em;
-  border: 3px solid #1da1f2;
-  border-top-color: #1da0f233;
-  animation: loading 0.4s linear 0s infinite normal forwards;
 }
 
 .result {

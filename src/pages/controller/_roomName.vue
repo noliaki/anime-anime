@@ -14,6 +14,7 @@ import TheConnectingSignage from '~/components/Controller/TheConnectingSignage.v
 import TheOperation from '~/components/Controller/TheOperation.vue'
 import TheGenerating from '~/components/Controller/TheGenerating.vue'
 import TheAnimationDisplay from '~/components/Controller/TheAnimationDisplay.vue'
+import TheError from '~/components/Controller/TheError.vue'
 
 export default Vue.extend({
   components: {
@@ -22,7 +23,8 @@ export default Vue.extend({
     TheConnectingSignage,
     TheOperation,
     TheGenerating,
-    TheAnimationDisplay
+    TheAnimationDisplay,
+    TheError
   },
   computed: {
     scene(): string {

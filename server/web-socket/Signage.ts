@@ -35,6 +35,7 @@ async function onConnect(socket: socketIo.Socket): Promise<void> {
     .on(signageEvent.startedStreaming, onStartedStreaming(socket))
     .on(signageEvent.startGenerating, onStartGenerating(socket))
     .on(signageEvent.doneGenerated, onDoneGenerated(socket))
+    .on('disconnecting', onDisconnecting(socket))
 
   const res: Responce = {
     id: signage.id,
@@ -136,41 +137,6 @@ function onStartedStreaming(
   }
 }
 
-// function onPausedStreaming(socket: socketIo.Socket): () => Promise<void> {
-//   return async (): Promise<void> => {
-//     const signage: Signage | undefined = await getRepository(Signage).findOne({
-//       relations: ['room'],
-//       where: {
-//         socketId: socket.id
-//       }
-//     })
-
-//     if (!(signage && signage.room)) {
-//       socket.emit(signageEvent.error, {
-//         message: 'signage is not found'
-//       })
-
-//       return
-//     }
-
-//     signage.room.status = Status.Shot
-//     await signage.room.save()
-
-//     const res: Responce = {
-//       roomName: signage.room.name,
-//       status: signage.room.status
-//     }
-
-//     io.of(signageNameSpace)
-//       .in(signage.room.name)
-//       .emit(signageEvent.updatedStatus, res)
-
-//     io.of(controllerNameSpace)
-//       .in(signage.room.name)
-//       .emit(controllerEvent.updatedStatus, res)
-//   }
-// }
-
 function onStartGenerating(socket: socketIo.Socket): () => Promise<void> {
   return async (): Promise<void> => {
     const signage: Signage | undefined = await getRepository(Signage).findOne({
@@ -244,5 +210,31 @@ function onDoneGenerated(
       .emit(controllerEvent.updatedStatus, res)
 
     socket.leave(signage.room.name)
+  }
+}
+
+function onDisconnecting(
+  socket: socketIo.Socket
+): (reason: any) => Promise<void> {
+  return async (reason: any): Promise<void> => {
+    const signage: Signage | undefined = await getRepository(Signage).findOne({
+      relations: ['room'],
+      where: {
+        socketId: socket.id
+      }
+    })
+
+    if (!(signage && signage.room)) {
+      return
+    }
+
+    signage.room.status = Status.SignageDisconnecting
+    await signage.room.save()
+
+    io.of(controllerNameSpace)
+      .in(signage.room.name)
+      .emit(controllerEvent.error, {
+        message: reason
+      })
   }
 }

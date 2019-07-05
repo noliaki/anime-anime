@@ -32,8 +32,6 @@ export const getters: GetterTree<State, null> = {
 
       case Status.ControllerReady:
         return 'TheConnectingSignage'
-      // case Status.StartStreaming:
-      //   return 'TheBeforeStart'
 
       case Status.Streaming:
       case Status.Shot:
@@ -45,6 +43,10 @@ export const getters: GetterTree<State, null> = {
 
       case Status.FinishGenerating:
         return 'TheAnimationDisplay'
+
+      case Status.Error:
+      case Status.SignageDisconnecting:
+        return 'TheError'
 
       default:
         return 'TheWaiting'
@@ -77,6 +79,9 @@ export const mutations: MutationTree<State> = {
   },
   changeFrameIndex(state: State, selectedIndex: number | undefined): void {
     state.selectedFrameIndex = selectedIndex
+  },
+  error(state: State): void {
+    state.status = Status.Error
   }
 }
 
@@ -106,6 +111,13 @@ export const actions: ActionTree<State, null> = {
               console.log(data)
               commit('recieveRequest')
               commit('changeFrameIndex', data.selectedIndex)
+            }
+          )
+          .on(
+            controllerEvent.error,
+            (data: any): void => {
+              console.log(data)
+              commit('error')
             }
           )
       }

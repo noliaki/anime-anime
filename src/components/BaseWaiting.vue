@@ -36,7 +36,7 @@ export default Vue.extend({})
   bottom: 0;
   left: 0;
   margin: auto;
-  opacity: 0.6;
+  mix-blend-mode: darken;
   border-width: 5px;
   border-style: solid;
   border-radius: 48% 52% 50% 50% / 39% 57% 43% 61%;
@@ -44,7 +44,7 @@ export default Vue.extend({})
 
 .waiting::before {
   border-color: #90daff;
-  animation: loop 500ms linear 0s infinite reverse forwards;
+  animation: loop 1000ms linear 0s infinite normal forwards;
 }
 
 .waiting::after {
@@ -59,7 +59,7 @@ export default Vue.extend({})
 
 .waiting__inner::after {
   border-color: #fff890;
-  animation: loop 1100ms linear 0s infinite normal forwards;
+  animation: loop 1300ms linear 0s infinite normal forwards;
 }
 
 span {
@@ -78,8 +78,14 @@ span:after {
     border-radius: 48% 52% 50% 50% / 39% 57% 43% 61%;
     transform: rotate(0);
   }
+  25% {
+    border-radius: 48% 52% 42% 58% / 49% 51% 49% 51%;
+  }
   50% {
-    border-radius: 61% 39% 60% 40% / 49% 63% 37% 51%;
+    border-radius: 47% 53% 61% 39% / 54% 47% 53% 46%;
+  }
+  75% {
+    border-radius: 63% 37% 55% 45% / 49% 55% 45% 51%;
   }
   100% {
     border-radius: 48% 52% 50% 50% / 39% 57% 43% 61%;

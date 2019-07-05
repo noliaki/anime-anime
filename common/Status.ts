@@ -6,5 +6,7 @@ export enum Status {
   StartGenerating,
   ImageGenerating,
   FinishGenerating,
-  Delivered
+  Delivered,
+  Error,
+  SignageDisconnecting
 }
