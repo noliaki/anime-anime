@@ -2,6 +2,7 @@ import * as http from 'http'
 import express from 'express'
 import * as consola from 'consola'
 import { Nuxt, Builder, NuxtConfigurationServer } from 'nuxt'
+import helmet from 'helmet'
 import { createConnection, Connection, ConnectionOptions } from 'typeorm'
 import config from '../nuxt.config'
 import { sessionQuery } from './session.sql'
@@ -36,7 +37,8 @@ const connectOption: ConnectionOptions = isProd
       entities: [Signage, Controller, Room]
     }
 
-const app: express.Express = (express as any)()
+const app: express.Express = express()
+app.use(helmet())
 const server: http.Server = http.createServer(app)
 
 async function start() {
