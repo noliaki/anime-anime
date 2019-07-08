@@ -213,6 +213,7 @@ function mediaUploadAppend(
               })
             )
 
+            console.log('data')
             segmentIndex++
           }
         )
