@@ -198,17 +198,20 @@ function mediaUploadAppend(
 ): Promise<void> {
   return new Promise(
     (resolve: () => void, reject: (reason: any) => void): void => {
+      const requests: Promise<Twitter.ResponseData>[] = []
       let segmentIndex: number = 0
       fs.createReadStream(filePath)
         .on(
           'data',
           (chunk: any[]): void => {
-            client.post('media/upload', {
-              command: 'APPEND',
-              media_id: mediaId,
-              media: chunk,
-              segment_index: segmentIndex
-            })
+            requests.push(
+              client.post('media/upload', {
+                command: 'APPEND',
+                media_id: mediaId,
+                media: chunk,
+                segment_index: segmentIndex
+              })
+            )
 
             segmentIndex++
           }
@@ -217,7 +220,18 @@ function mediaUploadAppend(
           'end',
           (): void => {
             console.log('end')
-            resolve()
+            Promise.all(requests)
+              .then(
+                (): void => {
+                  resolve()
+                }
+              )
+              .catch(
+                (err: any): void => {
+                  console.log(err)
+                  reject(err)
+                }
+              )
           }
         )
         .on(
