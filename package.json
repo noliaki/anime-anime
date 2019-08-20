@@ -1,11 +1,11 @@
 {
-  "name": "media-3d",
+  "name": "anime-anime",
   "version": "1.0.0",
   "description": "My stylish Nuxt.js project",
   "author": "noriaki-yamada",
   "engines": {
-    "node": "10.14.2",
-    "npm": "6.9.0"
+    "node": "12.8.1",
+    "npm": "6.10.2"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon",
@@ -36,7 +36,6 @@
     "passport": "^0.4.0",
     "passport-twitter": "^1.0.4",
     "pg": "^7.11.0",
-    "pixi.js": "^5.0.4",
     "qrcode": "^1.3.3",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
@@ -59,7 +58,6 @@
     "@types/node": "^12.0.7",
     "@types/passport": "^1.0.0",
     "@types/passport-twitter": "^1.0.34",
-    "@types/pixi.js": "^4.8.8",
     "@types/qrcode": "^1.3.3",
     "@types/socket.io": "^2.1.2",
     "@types/socket.io-client": "^1.4.32",
