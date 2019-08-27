@@ -1,7 +1,7 @@
-import NuxtConfiguration from '@nuxt/config'
+import { Configuration } from '@nuxt/types'
 import TerserPlugin from 'terser-webpack-plugin'
 
-const config: NuxtConfiguration = {
+const config: Configuration = {
   mode: 'universal',
   serverMiddleware: [
     {
@@ -51,6 +51,11 @@ const config: NuxtConfiguration = {
    */
   modules: [],
   devModules: [],
+  buildModules: ['@nuxt/typescript-build'],
+  typescript: {
+    typeCheck: true,
+    ignoreNotFoundWarnings: true
+  },
 
   srcDir: 'src/',
 
