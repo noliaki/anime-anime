@@ -129,12 +129,9 @@ export default Vue.extend({
             false
           )
 
-          img.addEventListener(
-            'error',
-            (event: ErrorEvent): void => {
-              reject(event)
-            }
-          )
+          img.addEventListener('error', (event: ErrorEvent): void => {
+            reject(event)
+          })
 
           img.src = src
         }

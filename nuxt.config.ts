@@ -50,7 +50,6 @@ const config: Configuration = {
    ** Nuxt.js modules
    */
   modules: [],
-  devModules: [],
   buildModules: ['@nuxt/typescript-build'],
   typescript: {
     typeCheck: true,

@@ -120,11 +120,10 @@ export default Vue.extend({
     getVideoDevices(): Promise<MediaDeviceInfo[]> {
       return navigator.mediaDevices
         .enumerateDevices()
-        .then(
-          (devices: MediaDeviceInfo[]): MediaDeviceInfo[] =>
-            devices.filter(
-              (device: MediaDeviceInfo): boolean => device.kind === 'videoinput'
-            )
+        .then((devices: MediaDeviceInfo[]): MediaDeviceInfo[] =>
+          devices.filter(
+            (device: MediaDeviceInfo): boolean => device.kind === 'videoinput'
+          )
         )
     },
     getStream(constraints: MediaStreamConstraints): Promise<MediaStream> {
