@@ -1,4 +1,17 @@
-export default ({ store }, inject): void => {
-  inject('signage', store.state.signage)
-  inject('controller', store.state.controller)
+import Vue from 'vue'
+
+if (!('$signage' in Vue.prototype)) {
+  Object.defineProperty(Vue.prototype, '$signage', {
+    get(this: Vue) {
+      return this.$store.state.signage
+    }
+  })
+}
+
+if (!('$controller' in Vue.prototype)) {
+  Object.defineProperty(Vue.prototype, '$controller', {
+    get(this: Vue) {
+      return this.$store.state.controller
+    }
+  })
 }

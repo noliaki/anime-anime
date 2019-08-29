@@ -114,27 +114,18 @@ export const actions: ActionTree<State, null> = {
   initIo({ commit }): void {
     signageIo = io('/signage')
 
-    signageIo.on(
-      'connect',
-      (): void => {
-        signageIo
-          .on(
-            signageEvent.updatedStatus,
-            (data: Responce): void => {
-              console.log(signageEvent.updatedStatus)
-              console.log(data)
-              commit('updatedStatus', data)
-            }
-          )
-          .on(
-            signageEvent.changeFrame,
-            (data: Responce): void => {
-              console.log(data)
-              commit('changeFrameIndex', data.selectedIndex)
-            }
-          )
-      }
-    )
+    signageIo.on('connect', (): void => {
+      signageIo
+        .on(signageEvent.updatedStatus, (data: Responce): void => {
+          console.log(signageEvent.updatedStatus)
+          console.log(data)
+          commit('updatedStatus', data)
+        })
+        .on(signageEvent.changeFrame, (data: Responce): void => {
+          console.log(data)
+          commit('changeFrameIndex', data.selectedIndex)
+        })
+    })
   },
   startedStream(): void {
     signageIo.emit(signageEvent.startedStreaming)

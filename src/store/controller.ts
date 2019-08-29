@@ -88,40 +88,28 @@ export const mutations: MutationTree<State> = {
 export const actions: ActionTree<State, null> = {
   initIo({ commit }): void {
     controllerIo = io('/controller')
-    controllerIo.on(
-      'connect',
-      (): void => {
-        controllerIo
-          .on(
-            controllerEvent.updatedStatus,
-            (data: any): void => {
-              console.log(controllerEvent.updatedStatus)
-              console.log(data)
-              commit('updatedStatus', data)
-              commit('recieveRequest')
+    controllerIo.on('connect', (): void => {
+      controllerIo
+        .on(controllerEvent.updatedStatus, (data: any): void => {
+          console.log(controllerEvent.updatedStatus)
+          console.log(data)
+          commit('updatedStatus', data)
+          commit('recieveRequest')
 
-              if (data.status === Status.FinishGenerating) {
-                controllerIo.close()
-              }
-            }
-          )
-          .on(
-            controllerEvent.changeFrame,
-            (data: any): void => {
-              console.log(data)
-              commit('recieveRequest')
-              commit('changeFrameIndex', data.selectedIndex)
-            }
-          )
-          .on(
-            controllerEvent.error,
-            (data: any): void => {
-              console.log(data)
-              commit('error')
-            }
-          )
-      }
-    )
+          if (data.status === Status.FinishGenerating) {
+            controllerIo.close()
+          }
+        })
+        .on(controllerEvent.changeFrame, (data: any): void => {
+          console.log(data)
+          commit('recieveRequest')
+          commit('changeFrameIndex', data.selectedIndex)
+        })
+        .on(controllerEvent.error, (data: any): void => {
+          console.log(data)
+          commit('error')
+        })
+    })
   },
   start({ commit, state }): void {
     if (state.waitResponse) return
