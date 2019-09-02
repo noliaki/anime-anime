@@ -1,5 +1,8 @@
 {
   "watch": ["server", "./nuxt.config.ts", "src/serverMiddleware"],
   "ext": "ts",
-  "exec": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node -r tsconfig-paths/register ./server/index.ts"
+  "env": {
+    "TS_NODE_COMPILER_OPTIONS": "{\"module\":\"commonjs\"}"
+  },
+  "exec": "ts-node -r tsconfig-paths/register ./server/index.ts"
 }
