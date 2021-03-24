@@ -23,7 +23,8 @@ const connectOption: ConnectionOptions = isProd
       url: process.env.DATABASE_URL,
       synchronize: true,
       dropSchema: true,
-      entities: [Signage, Controller, Room]
+      entities: [Signage, Controller, Room],
+      ssl: true
     }
   : {
       type: 'mysql',
